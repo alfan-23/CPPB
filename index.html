@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Manajemen CPPB-IRT</title>
+    <title>Cara Pengolahan Pangan Yang Baik Industri Rumah Tangga Pangan</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -33,255 +33,144 @@
                     boxShadow: {
                         'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
                         'glow': '0 0 20px rgba(16, 185, 129, 0.4)',
+                        'card': '0 20px 40px -15px rgba(0,0,0,0.05)',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Animasi Transisi Tab */
-        .tab-content { 
-            display: none; 
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .tab-content.active { 
-            display: flex; 
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Latar Belakang Pola Lembut */
+        /* Latar Belakang Pola Estetik */
         body {
             background-color: #f8fafc;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 32px 32px;
         }
+
+        /* Animasi Masuk Halus */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
     </style>
 </head>
-<body class="text-slate-800 h-screen flex flex-col overflow-hidden selection:bg-cppb-500 selection:text-white">
+<body class="text-slate-800 min-h-screen flex flex-col selection:bg-cppb-500 selection:text-white">
 
-    <!-- Header Aplikasi (Gradien Premium) -->
-    <header class="bg-gradient-to-r from-cppb-900 via-cppb-800 to-cppb-900 text-white px-6 py-4 flex justify-between items-center z-20 shadow-lg relative overflow-hidden shrink-0">
-        <!-- Efek Cahaya Dekoratif di Header -->
+    <!-- Header Aplikasi (Minimalis & Elegan) -->
+    <header class="bg-gradient-to-r from-cppb-900 via-cppb-800 to-cppb-900 text-white px-6 py-4 flex justify-between items-center z-20 shadow-lg relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
         
-        <div class="flex items-center space-x-4 relative z-10">
+        <div class="flex items-center space-x-4 relative z-10 w-full max-w-5xl mx-auto">
             <div class="bg-white/10 backdrop-blur-md p-2.5 rounded-xl border border-white/20 shadow-glow">
                 <i data-lucide="shield-check" class="w-7 h-7 text-cppb-100"></i>
             </div>
             <div>
-                <h1 class="text-xl font-extrabold tracking-tight">Dasbor CPPB-IRT</h1>
-                <p class="text-xs text-cppb-100/80 font-medium tracking-wide mt-0.5">Sistem Informasi Keamanan Pangan Terpadu</p>
+                <h1 class="text-xl font-extrabold tracking-tight">CPPB-IRT</h1>
+                <p class="text-xs text-cppb-100/80 font-medium tracking-wide mt-0.5">Sistem Informasi Keamanan Pangan</p>
             </div>
-        </div>
-        
-        <div class="hidden md:flex items-center bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 space-x-2.5 relative z-10">
-            <div class="relative flex h-2.5 w-2.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+            
+            <div class="hidden md:flex items-center ml-auto bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 space-x-2.5">
+                <div class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                </div>
+                <span class="text-xs font-bold text-white tracking-wide">Portal Aktif</span>
             </div>
-            <span class="text-xs font-bold text-white tracking-wide">Sistem Online</span>
         </div>
     </header>
 
-    <!-- Area Kerja Utama -->
-    <div class="flex flex-1 overflow-hidden flex-col md:flex-row p-4 md:p-6 gap-6">
-        
-        <!-- Sidebar Menu (Floating Style) -->
-        <aside class="w-full md:w-80 bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl p-5 flex flex-col justify-between shrink-0 z-10 shadow-soft overflow-y-auto">
-            <div class="space-y-8">
-                
-                <!-- Profil Singkat / Banner Mini -->
-                <div class="bg-gradient-to-br from-cppb-50 to-emerald-100/50 p-4 rounded-2xl border border-cppb-100/50">
-                    <h3 class="text-sm font-bold text-cppb-800">Navigasi Dokumen</h3>
-                    <p class="text-[11px] text-cppb-600/80 mt-1 leading-relaxed font-medium">Pilih menu di bawah untuk mengakses instrumen dan panduan standar keamanan pangan.</p>
-                </div>
+    <!-- Area Konten Utama Tengah -->
+    <main class="flex-1 flex items-center justify-center p-6 relative">
+        <!-- Efek Latar Glow -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-cppb-500/5 blur-[120px] rounded-full pointer-events-none"></div>
 
-                <!-- Navigasi Menu -->
-                <nav class="space-y-3" id="nav-menu">
-                    <!-- Menu 1: Presentasi -->
-                    <button onclick="bukaTab('presentasi')" id="btn-presentasi" class="nav-btn w-full flex items-center p-4 rounded-2xl text-sm font-bold transition-all duration-300 bg-gradient-to-r from-cppb-600 to-cppb-500 text-white shadow-glow translate-x-1">
-                        <div class="bg-white/20 p-2 rounded-xl mr-3"><i data-lucide="monitor-play" class="w-5 h-5"></i></div>
-                        <span>File Presentasi</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 ml-auto opacity-70"></i>
-                    </button>
-                    
-                    <!-- Menu 2: Instrumen IRTP -->
-                    <button onclick="bukaTab('irtp')" id="btn-irtp" class="nav-btn w-full flex items-center p-4 rounded-2xl text-sm font-bold transition-all duration-300 text-slate-600 bg-transparent hover:bg-slate-100 border border-transparent">
-                        <div class="bg-slate-100 p-2 rounded-xl mr-3 text-slate-500"><i data-lucide="clipboard-list" class="w-5 h-5"></i></div>
-                        <span>Instrumen IRTP</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 ml-auto opacity-0 -translate-x-2 transition-all"></i>
-                    </button>
-                    
-                    <!-- Menu 3: Dokumentasi CPPB -->
-                    <button onclick="bukaTab('cppb')" id="btn-cppb" class="nav-btn w-full flex items-center p-4 rounded-2xl text-sm font-bold transition-all duration-300 text-slate-600 bg-transparent hover:bg-slate-100 border border-transparent">
-                        <div class="bg-slate-100 p-2 rounded-xl mr-3 text-slate-500"><i data-lucide="folder-check" class="w-5 h-5"></i></div>
-                        <span>Dokumentasi CPPB</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 ml-auto opacity-0 -translate-x-2 transition-all"></i>
-                    </button>
-                </nav>
-            </div>
-
-            <!-- Kartu Info Estetik di Bawah -->
-            <div class="mt-8 relative overflow-hidden rounded-2xl bg-slate-900 p-5 text-white">
-                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-cppb-500 rounded-full blur-2xl opacity-40"></div>
-                <i data-lucide="quote" class="w-6 h-6 text-cppb-400 mb-2 opacity-50"></i>
-                <p class="text-xs font-medium leading-relaxed relative z-10 text-slate-200">
-                    "Keamanan Pangan adalah tanggung jawab bersama untuk menciptakan produk industri rumah tangga yang bermutu."
-                </p>
-                <div class="mt-4 pt-4 border-t border-white/10 text-[10px] text-slate-400 font-bold tracking-wider uppercase">
-                    Dasbor v3.5 • Pro Edition
-                </div>
-            </div>
-        </aside>
-
-        <!-- Area Konten (Iframe Container) -->
-        <main class="flex-1 flex flex-col relative overflow-hidden rounded-3xl bg-white shadow-soft border border-slate-200/60">
+        <div class="w-full max-w-3xl relative z-10">
             
-            <!-- Peringatan Keamanan untuk Link Gemini (Desain Lebih Catchy) -->
-            <div id="peringatan-iframe" class="hidden bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-200/60 px-6 py-3 items-center justify-between shrink-0 z-10 transition-all duration-300">
-                <div class="flex items-center space-x-3 text-amber-800 text-xs font-medium">
-                    <div class="bg-amber-100 p-1.5 rounded-lg text-amber-600 shrink-0">
-                        <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+            <!-- Teks Sambutan (Hero Section) -->
+            <div class="text-center mb-10 opacity-0 animate-fade-up">
+                <div class="inline-flex items-center space-x-2 bg-cppb-100 text-cppb-700 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4 border border-cppb-200">
+                    <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                    <span>Menu Navigasi Utama</span>
+                </div>
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 tracking-tight mb-4 leading-snug">
+                    CARA PENGOLAHAN PANGAN YANG BAIK <span class="text-cppb-600 block md:inline mt-1 md:mt-0">INDUSTRI RUMAH TANGGA PANGAN</span>
+                </h2>
+                <p class="text-slate-500 text-sm md:text-base font-medium max-w-xl mx-auto leading-relaxed">
+                    Akses cepat materi presentasi, instrumen penilaian, dan panduan dokumentasi standar produksi pangan yang baik.
+                </p>
+            </div>
+
+            <!-- Daftar Menu Tautan (Cards) -->
+            <div class="space-y-5">
+                
+                <!-- Menu 1: Presentasi -->
+                <a href="https://alfan-23.github.io/Presentasi-CPBB/" target="_blank" rel="noopener noreferrer" 
+                   class="group flex items-center p-5 md:p-6 bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-card hover:shadow-soft hover:border-cppb-300 transition-all duration-300 transform hover:-translate-y-1 opacity-0 animate-fade-up delay-100">
+                    <div class="w-14 h-14 md:w-16 md:h-16 shrink-0 rounded-2xl bg-cppb-50 text-cppb-600 flex items-center justify-center mr-5 group-hover:bg-cppb-500 group-hover:text-white transition-colors duration-300 shadow-inner">
+                        <i data-lucide="monitor-play" class="w-7 h-7 md:w-8 md:h-8"></i>
                     </div>
-                    <span><b>Info Keamanan:</b> Tautan <i>Gemini Share</i> mungkin dicegah tampil oleh browser. Gunakan tombol <b>Buka Layar Penuh</b> di sudut kanan atas untuk akses optimal.</span>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-cppb-700 transition-colors">File Presentasi</h3>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1 font-medium">Materi edukasi interaktif standar keamanan pangan.</p>
+                    </div>
+                    <div class="hidden sm:flex w-10 h-10 rounded-full bg-slate-50 border border-slate-100 items-center justify-center group-hover:bg-cppb-50 group-hover:border-cppb-200 group-hover:text-cppb-600 transition-all">
+                        <i data-lucide="external-link" class="w-5 h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"></i>
+                    </div>
+                </a>
+
+                <!-- Menu 2: Instrumen IRTP -->
+                <a href="https://gemini.google.com/share/c1d245131b54" target="_blank" rel="noopener noreferrer" 
+                   class="group flex items-center p-5 md:p-6 bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-card hover:shadow-soft hover:border-sky-300 transition-all duration-300 transform hover:-translate-y-1 opacity-0 animate-fade-up delay-200">
+                    <div class="w-14 h-14 md:w-16 md:h-16 shrink-0 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mr-5 group-hover:bg-sky-500 group-hover:text-white transition-colors duration-300 shadow-inner">
+                        <i data-lucide="clipboard-list" class="w-7 h-7 md:w-8 md:h-8"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-sky-600 transition-colors">Instrumen Penilaian IRTP</h3>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1 font-medium">Formulir pemeriksaan standar sarana produksi pangan.</p>
+                    </div>
+                    <div class="hidden sm:flex w-10 h-10 rounded-full bg-slate-50 border border-slate-100 items-center justify-center group-hover:bg-sky-50 group-hover:border-sky-200 group-hover:text-sky-600 transition-all">
+                        <i data-lucide="external-link" class="w-5 h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"></i>
+                    </div>
+                </a>
+
+                <!-- Menu 3: Dokumentasi CPPB -->
+                <a href="https://gemini.google.com/share/bd06dbb25b30" target="_blank" rel="noopener noreferrer" 
+                   class="group flex items-center p-5 md:p-6 bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-card hover:shadow-soft hover:border-purple-300 transition-all duration-300 transform hover:-translate-y-1 opacity-0 animate-fade-up delay-300">
+                    <div class="w-14 h-14 md:w-16 md:h-16 shrink-0 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mr-5 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300 shadow-inner">
+                        <i data-lucide="folder-check" class="w-7 h-7 md:w-8 md:h-8"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-purple-600 transition-colors">Dokumentasi CPPB</h3>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1 font-medium">Panduan arsip dan rekam jejak produksi pangan.</p>
+                    </div>
+                    <div class="hidden sm:flex w-10 h-10 rounded-full bg-slate-50 border border-slate-100 items-center justify-center group-hover:bg-purple-50 group-hover:border-purple-200 group-hover:text-purple-600 transition-all">
+                        <i data-lucide="external-link" class="w-5 h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"></i>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- Footer / Info Bawah -->
+            <div class="mt-12 text-center opacity-0 animate-fade-up delay-300">
+                <p class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-2">Sistem Dashboard v4.0</p>
+                <div class="inline-flex items-center justify-center space-x-2 text-[10px] text-slate-400 bg-slate-200/50 px-4 py-1.5 rounded-full">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-cppb-600"></i>
+                    <span>Tautan aman dan terenkripsi</span>
                 </div>
             </div>
 
-            <!-- TAB 1: Presentasi CPPB -->
-            <div id="tab-presentasi" class="tab-content active flex-1 flex-col h-full bg-slate-50">
-                <div class="bg-white/80 backdrop-blur-sm border-b border-slate-100 px-6 py-4 flex justify-between items-center shrink-0 z-10">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-full bg-cppb-100 text-cppb-600 flex items-center justify-center">
-                            <i data-lucide="monitor-play" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <h2 class="font-bold text-slate-800 text-sm">Presentasi Slide CPBB</h2>
-                            <p class="text-[10px] text-slate-500 font-medium">Materi edukasi interaktif</p>
-                        </div>
-                    </div>
-                    <a href="https://alfan-23.github.io/Presentasi-CPBB/" target="_blank" class="group text-xs font-bold text-cppb-700 hover:text-white bg-cppb-50 hover:bg-cppb-600 px-4 py-2 rounded-xl transition-all duration-300 flex items-center space-x-2 border border-cppb-200 hover:border-transparent hover:shadow-lg hover:shadow-cppb-500/30">
-                        <span>Buka Layar Penuh</span>
-                        <i data-lucide="external-link" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
-                    </a>
-                </div>
-                <div class="flex-1 relative w-full h-full p-0">
-                    <iframe src="https://alfan-23.github.io/Presentasi-CPBB/" class="absolute inset-0 w-full h-full border-0 bg-transparent" title="Presentasi CPBB"></iframe>
-                </div>
-            </div>
-
-            <!-- TAB 2: Instrumen IRTP -->
-            <div id="tab-irtp" class="tab-content flex-1 flex-col h-full bg-slate-50">
-                <div class="bg-white/80 backdrop-blur-sm border-b border-slate-100 px-6 py-4 flex justify-between items-center shrink-0 z-10">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center">
-                            <i data-lucide="clipboard-list" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <h2 class="font-bold text-slate-800 text-sm">Instrumen Penilaian IRTP</h2>
-                            <p class="text-[10px] text-slate-500 font-medium">Formulir pemeriksaan standar</p>
-                        </div>
-                    </div>
-                    <a href="https://gemini.google.com/share/c1d245131b54" target="_blank" class="group text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 px-4 py-2 rounded-xl transition-all duration-300 flex items-center space-x-2 shadow-md hover:shadow-xl">
-                        <span>Buka di Tab Baru</span>
-                        <i data-lucide="external-link" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
-                    </a>
-                </div>
-                <div class="flex-1 relative w-full h-full">
-                    <iframe src="https://gemini.google.com/share/c1d245131b54" class="absolute inset-0 w-full h-full border-0 bg-slate-50/50" title="Instrumen IRTP"></iframe>
-                </div>
-            </div>
-
-            <!-- TAB 3: Dokumentasi CPPB -->
-            <div id="tab-cppb" class="tab-content flex-1 flex-col h-full bg-slate-50">
-                <div class="bg-white/80 backdrop-blur-sm border-b border-slate-100 px-6 py-4 flex justify-between items-center shrink-0 z-10">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
-                            <i data-lucide="folder-check" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <h2 class="font-bold text-slate-800 text-sm">Dokumentasi CPPB</h2>
-                            <p class="text-[10px] text-slate-500 font-medium">Arsip dan panduan produksi</p>
-                        </div>
-                    </div>
-                    <a href="https://gemini.google.com/share/bd06dbb25b30" target="_blank" class="group text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 px-4 py-2 rounded-xl transition-all duration-300 flex items-center space-x-2 shadow-md hover:shadow-xl">
-                        <span>Buka di Tab Baru</span>
-                        <i data-lucide="external-link" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
-                    </a>
-                </div>
-                <div class="flex-1 relative w-full h-full">
-                    <iframe src="https://gemini.google.com/share/bd06dbb25b30" class="absolute inset-0 w-full h-full border-0 bg-slate-50/50" title="Dokumentasi CPPB"></iframe>
-                </div>
-            </div>
-
-        </main>
-    </div>
+        </div>
+    </main>
 
     <script>
         // Inisialisasi ikon Lucide
         lucide.createIcons();
-
-        // Fungsi Animasi Pindah Tab
-        function bukaTab(idTab) {
-            // 1. Sembunyikan semua konten tab
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // 2. Tampilkan tab yang dipilih
-            const tabTerpilih = document.getElementById(`tab-${idTab}`);
-            if (tabTerpilih) {
-                // Sedikit delay untuk memicu animasi CSS transform
-                setTimeout(() => {
-                    tabTerpilih.classList.add('active');
-                }, 10);
-            }
-
-            // 3. Atur gaya (Styling) tombol di sidebar
-            const configTombol = {
-                'presentasi': { warnaIkon: 'text-cppb-600', bgIkon: 'bg-white/20' },
-                'irtp': { warnaIkon: 'text-sky-600', bgIkon: 'bg-white/20' },
-                'cppb': { warnaIkon: 'text-purple-600', bgIkon: 'bg-white/20' }
-            };
-
-            const semuaId = Object.keys(configTombol);
-            
-            semuaId.forEach(id => {
-                const btn = document.getElementById(`btn-${id}`);
-                const iconContainer = btn.querySelector('div');
-                const chevron = btn.querySelector('.ml-auto');
-
-                if (id === idTab) {
-                    // Gaya Tombol Aktif (Catchy Gradient & Glow)
-                    btn.className = `nav-btn w-full flex items-center p-4 rounded-2xl text-sm font-bold transition-all duration-300 bg-gradient-to-r from-cppb-600 to-cppb-500 text-white shadow-glow translate-x-1`;
-                    iconContainer.className = `p-2 rounded-xl mr-3 ${configTombol[id].bgIkon} text-white`;
-                    chevron.className = "lucide lucide-chevron-right w-4 h-4 ml-auto opacity-100 translate-x-0 transition-all";
-                } else {
-                    // Gaya Tombol Tidak Aktif (Clean & Simple)
-                    btn.className = `nav-btn w-full flex items-center p-4 rounded-2xl text-sm font-bold transition-all duration-300 text-slate-500 bg-transparent hover:bg-slate-100 hover:text-slate-800 border border-transparent`;
-                    iconContainer.className = `bg-slate-100 p-2 rounded-xl mr-3 text-slate-400 group-hover:text-slate-600 transition-colors`;
-                    chevron.className = "lucide lucide-chevron-right w-4 h-4 ml-auto opacity-0 -translate-x-2 transition-all";
-                }
-            });
-
-            // 4. Logika menampilkan pita peringatan untuk tautan Gemini
-            const peringatan = document.getElementById('peringatan-iframe');
-            if (idTab === 'irtp' || idTab === 'cppb') {
-                peringatan.classList.remove('hidden');
-                peringatan.classList.add('flex');
-            } else {
-                peringatan.classList.add('hidden');
-                peringatan.classList.remove('flex');
-            }
-        }
     </script>
 </body>
 </html>
