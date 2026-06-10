@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Portal Dokumen</title>
+    <title>Dashboard Portal Dokumen & Slide Presentasi</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- PDF.js Mozilla Library for PDF Slide Player -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        /* Custom scrollbar styling for a cleaner look */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -24,336 +25,676 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+        .slide-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+<body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col overflow-hidden select-none">
 
-    <!-- Top Navigation Header -->
-    <header class="bg-indigo-900 text-white shadow-md px-6 py-4 flex flex-wrap justify-between items-center z-10">
+    <!-- Header Navigasi -->
+    <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex flex-wrap justify-between items-center z-10 shrink-0">
         <div class="flex items-center space-x-3">
-            <div class="bg-white text-indigo-900 p-2 rounded-lg shadow-inner">
-                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+            <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-md">
+                <i data-lucide="presentation" class="w-6 h-6 animate-pulse"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold tracking-wide">Portal Dokumen & Penilaian</h1>
-                <p class="text-xs text-indigo-200">Akses cepat materi presentasi, instrumen IRTP, dan panduan CPPB</p>
+                <h1 class="text-lg font-bold tracking-wide text-white flex items-center gap-2">
+                    Portal Slide & Dokumen Interaktif 
+                    <span class="text-xs font-normal px-2.5 py-0.5 bg-indigo-500/20 text-indigo-400 rounded-full border border-indigo-500/30">Auto-Load Engine</span>
+                </h1>
+                <p class="text-xs text-slate-400">Navigasi dokumen penunjang, presentasi otomatis, dan integrasi eksternal</p>
             </div>
         </div>
-        <!-- Status Indicator -->
-        <div class="hidden md:flex items-center space-x-2 text-xs bg-indigo-800 px-3 py-1.5 rounded-full border border-indigo-700">
-            <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></span>
-            <span>Siap di-host di GitHub Pages</span>
+        
+        <!-- Info Status Repositori -->
+        <div class="hidden md:flex items-center space-x-3 text-xs">
+            <div class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center space-x-2">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
+                <span class="text-slate-300">Siap di GitHub Pages</span>
+            </div>
         </div>
     </header>
 
-    <!-- Main Workspace Container -->
+    <!-- Ruang Kerja Utama -->
     <div class="flex flex-1 overflow-hidden flex-col md:flex-row">
         
-        <!-- Sidebar Navigation -->
-        <aside class="w-full md:w-64 bg-white border-r border-slate-200 p-4 flex flex-col justify-between shrink-0">
+        <!-- Navigasi Bilah Samping (Sidebar) -->
+        <aside class="w-full md:w-72 bg-slate-950 border-r border-slate-800 p-5 flex flex-col justify-between shrink-0 overflow-y-auto">
             <div class="space-y-6">
+                <!-- Alat Aplikasi -->
                 <div>
-                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-3">Menu Dokumen</span>
-                    <nav class="space-y-1" id="navigation-menu">
-                        <!-- Presentasi Tab Button -->
-                        <button onclick="switchTab('presentasi')" id="btn-presentasi" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-50">
-                            <i data-lucide="presentation" class="w-5 h-5"></i>
-                            <span>File Presentasi</span>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-3">Tampilan Dokumen</span>
+                    <nav class="space-y-1">
+                        <!-- Mode Slide Player (Aktif secara bawaan) -->
+                        <button onclick="switchTab('slide-player')" id="btn-slide-player" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition duration-200 bg-indigo-600 text-white shadow-lg shadow-indigo-600/10">
+                            <div class="flex items-center space-x-3">
+                                <i data-lucide="play-circle" class="w-5 h-5"></i>
+                                <span>Aplikasi Slide Player</span>
+                            </div>
+                            <span class="bg-indigo-500 text-[10px] px-1.5 py-0.5 rounded text-white font-bold">PDF</span>
                         </button>
                         
-                        <!-- IRTP Tab Button -->
-                        <button onclick="switchTab('irtp')" id="btn-irtp" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600">
-                            <i data-lucide="clipboard-check" class="w-5 h-5"></i>
-                            <span>Instrumen IRTP</span>
-                        </button>
-                        
-                        <!-- CPPB Tab Button -->
-                        <button onclick="switchTab('cppb')" id="btn-cppb" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600">
-                            <i data-lucide="file-text" class="w-5 h-5"></i>
-                            <span>Dokumentasi CPPB</span>
-                        </button>
-                        
-                        <!-- PDF Uploader Tab Button -->
-                        <button onclick="switchTab('pdf')" id="btn-pdf" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600">
-                            <i data-lucide="file-up" class="w-5 h-5"></i>
-                            <span>Unggah & Lihat PDF</span>
+                        <!-- Mode Pratinjau Dokumen -->
+                        <button onclick="switchTab('doc-reader')" id="btn-doc-reader" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition duration-200 text-slate-400 hover:bg-slate-900 hover:text-white">
+                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                            <span>Mode Gulir Dokumen</span>
                         </button>
                     </nav>
                 </div>
 
-                <!-- PDF Direct Upload Form in Sidebar -->
-                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl">
-                    <label class="block text-xs font-semibold text-slate-500 mb-2">Unggah PDF Cepat</label>
-                    <div class="relative flex items-center justify-center w-full">
-                        <label for="pdf-sidebar-upload" class="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-slate-50 transition duration-150">
-                            <div class="flex flex-col items-center justify-center pt-2 pb-2 text-center px-2">
-                                <i data-lucide="cloud-upload" class="w-6 h-6 text-slate-400 mb-1"></i>
-                                <p class="text-xs text-slate-500 font-medium">Klik untuk pilih PDF</p>
+                <!-- Tautan Cepat Gemini Share (Langsung Buka Tab Baru) -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Tautan Cepat (Tab Baru)</span>
+                        <span class="text-[9px] text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-medium font-mono">Eksternal</span>
+                    </div>
+                    <div class="space-y-2">
+                        <!-- Tautan Presentasi -->
+                        <a href="https://gemini.google.com/share/e7423cd6175d" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-between p-3 rounded-xl text-xs font-medium bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition group">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-slate-950 transition">
+                                    <i data-lucide="presentation" class="w-4 h-4"></i>
+                                </div>
+                                <span>1. File Presentasi</span>
                             </div>
-                            <input id="pdf-sidebar-upload" type="file" accept="application/pdf" class="hidden" onchange="handlePDFUpload(this)" />
-                        </label>
+                            <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
+                        </a>
+
+                        <!-- Tautan IRTP -->
+                        <a href="https://gemini.google.com/share/c1d245131b54" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-between p-3 rounded-xl text-xs font-medium bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition group">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="p-1.5 rounded-lg bg-sky-500/10 text-sky-400 group-hover:bg-sky-500 group-hover:text-slate-950 transition">
+                                    <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                                </div>
+                                <span>2. Instrumen IRTP</span>
+                            </div>
+                            <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
+                        </a>
+
+                        <!-- Tautan CPPB -->
+                        <a href="https://gemini.google.com/share/bd06dbb25b30" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-between p-3 rounded-xl text-xs font-medium bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition group">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500 group-hover:text-slate-950 transition">
+                                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                                </div>
+                                <span>3. Dokumentasi CPPB</span>
+                            </div>
+                            <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Informasi Berkas Aktif -->
+                <div class="bg-slate-900/50 border border-slate-800/85 p-4 rounded-xl space-y-2">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Berkas Terhubung</span>
+                    <div id="file-status-badge" class="text-[11px] text-slate-300 flex items-center gap-2 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800">
+                        <i data-lucide="file" class="w-4 h-4 text-indigo-400 shrink-0"></i>
+                        <span id="active-filename" class="truncate font-mono">Mengecek file...</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Sidebar Footer -->
-            <div class="pt-4 border-t border-slate-100 text-xs text-slate-400 text-center">
-                <p>Dashboard v1.0.0</p>
-                <p class="mt-1">Dibuat untuk GitHub Pages</p>
+            <!-- Bagian Kaki (Footer) -->
+            <div class="pt-4 border-t border-slate-800 text-[10px] text-slate-600 space-y-1">
+                <p class="font-semibold text-slate-400">Aplikasi Presentasi v2.1</p>
+                <p>Otomatisasi Penuh & Tanpa Unggah Manual</p>
             </div>
         </aside>
 
-        <!-- Dynamic Content Area -->
-        <main class="flex-1 flex flex-col overflow-hidden bg-slate-100">
-            
-            <!-- Iframe Warning Box (Important because Gemini sharing URLs might forbid embedding) -->
-            <div id="iframe-warning" class="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-start space-x-3 text-amber-800 text-xs">
-                <i data-lucide="alert-circle" class="w-4.5 h-4.5 text-amber-600 shrink-0 mt-0.5 animate-bounce"></i>
-                <div class="flex-1">
-                    <span class="font-bold">Informasi Tampilan:</span> Beberapa situs seperti Gemini Share memiliki pembatasan keamanan ketat (CSP/X-Frame-Options) yang dapat menghalangi halaman untuk dirender langsung di dalam kotak di bawah. Jika halaman tampak kosong, gunakan tombol <strong>"Buka di Tab Baru"</strong> untuk akses langsung tanpa hambatan.
-                </div>
-            </div>
+        <!-- Panel Konten Dinamis -->
+        <main class="flex-1 flex flex-col overflow-hidden bg-slate-900 relative">
 
-            <!-- Tab 1: Presentasi -->
-            <div id="tab-presentasi" class="tab-content flex-1 flex flex-col h-full">
-                <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shrink-0">
-                    <div class="flex items-center space-x-2">
-                        <i data-lucide="presentation" class="w-5 h-5 text-indigo-600"></i>
-                        <span class="font-semibold text-slate-700">Tampilan File Presentasi</span>
+            <!-- TAB 1: Slide Player (Tampilan Utama) -->
+            <div id="tab-slide-player" class="tab-content flex-1 flex flex-col h-full overflow-hidden">
+                <!-- Slide Header Toolbar -->
+                <div class="bg-slate-950 border-b border-slate-800 px-6 py-3.5 flex justify-between items-center shrink-0">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-red-500/10 text-red-400 border border-red-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Live Presenter
+                        </span>
+                        <h2 class="text-sm font-bold text-white hidden sm:block">Aplikasi Presentasi Slide PDF</h2>
                     </div>
-                    <a href="https://gemini.google.com/share/e7423cd6175d" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition shadow-sm">
-                        <span>Buka di Tab Baru</span>
-                        <i data-lucide="external-link" class="w-4 h-4"></i>
-                    </a>
-                </div>
-                <div class="flex-1 bg-slate-300 relative">
-                    <iframe src="https://gemini.google.com/share/e7423cd6175d" class="w-full h-full border-0 absolute inset-0 bg-white" title="File Presentasi"></iframe>
-                </div>
-            </div>
 
-            <!-- Tab 2: IRTP -->
-            <div id="tab-irtp" class="tab-content flex-1 hidden flex-col h-full">
-                <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shrink-0">
+                    <!-- Slide Controls -->
                     <div class="flex items-center space-x-2">
-                        <i data-lucide="clipboard-check" class="w-5 h-5 text-indigo-600"></i>
-                        <span class="font-semibold text-slate-700">Tampilan Instrumen Penilaian IRTP</span>
-                    </div>
-                    <a href="https://gemini.google.com/share/c1d245131b54" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition shadow-sm">
-                        <span>Buka di Tab Baru</span>
-                        <i data-lucide="external-link" class="w-4 h-4"></i>
-                    </a>
-                </div>
-                <div class="flex-1 bg-slate-300 relative">
-                    <iframe src="https://gemini.google.com/share/c1d245131b54" class="w-full h-full border-0 absolute inset-0 bg-white" title="Instrumen Penilaian IRTP"></iframe>
-                </div>
-            </div>
+                        <button onclick="prevPage()" class="p-1.5 bg-slate-800 hover:bg-indigo-600 rounded-lg text-slate-300 hover:text-white transition disabled:opacity-40 disabled:hover:bg-slate-800" id="btn-prev-slide" disabled>
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-xs font-mono flex items-center space-x-1 text-slate-300">
+                            <span class="text-white font-bold" id="current-page-num">0</span>
+                            <span class="text-slate-600">/</span>
+                            <span id="total-pages-count">0</span>
+                        </div>
+                        <button onclick="nextPage()" class="p-1.5 bg-slate-800 hover:bg-indigo-600 rounded-lg text-slate-300 hover:text-white transition disabled:opacity-40 disabled:hover:bg-slate-800" id="btn-next-slide" disabled>
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                        
+                        <div class="h-6 w-px bg-slate-800 mx-1"></div>
 
-            <!-- Tab 3: CPPB -->
-            <div id="tab-cppb" class="tab-content flex-1 hidden flex-col h-full">
-                <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shrink-0">
-                    <div class="flex items-center space-x-2">
-                        <i data-lucide="file-text" class="w-5 h-5 text-indigo-600"></i>
-                        <span class="font-semibold text-slate-700">Tampilan Dokumentasi CPPB</span>
-                    </div>
-                    <a href="https://gemini.google.com/share/bd06dbb25b30" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition shadow-sm">
-                        <span>Buka di Tab Baru</span>
-                        <i data-lucide="external-link" class="w-4 h-4"></i>
-                    </a>
-                </div>
-                <div class="flex-1 bg-slate-300 relative">
-                    <iframe src="https://gemini.google.com/share/bd06dbb25b30" class="w-full h-full border-0 absolute inset-0 bg-white" title="Dokumentasi CPPB"></iframe>
-                </div>
-            </div>
+                        <!-- Autoplay toggle -->
+                        <button onclick="toggleSlideshow()" id="btn-autoplay" class="p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition flex items-center space-x-1 text-xs px-2.5">
+                            <i data-lucide="play" class="w-4 h-4 text-emerald-400" id="autoplay-icon"></i>
+                            <span id="autoplay-text">Autoplay</span>
+                        </button>
 
-            <!-- Tab 4: PDF Viewer -->
-            <div id="tab-pdf" class="tab-content flex-1 hidden flex-col h-full bg-slate-100">
-                <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shrink-0">
-                    <div class="flex items-center space-x-2">
-                        <i data-lucide="file-up" class="w-5 h-5 text-indigo-600"></i>
-                        <span class="font-semibold text-slate-700">Pratinjau File PDF Unggahan</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="clearPDF()" id="btn-clear-pdf" class="hidden bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 text-xs font-semibold px-3 py-2 rounded-lg transition items-center space-x-1.5">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            <span>Hapus PDF</span>
+                        <!-- Go Fullscreen Button -->
+                        <button onclick="enterFullscreen()" class="p-1.5 bg-slate-800 hover:bg-indigo-600 rounded-lg text-slate-300 hover:text-white transition" title="Layar Penuh" id="btn-fullscreen">
+                            <i data-lucide="maximize" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Dynamic Viewer Area -->
-                <div class="flex-1 flex flex-col items-center justify-center p-6 relative overflow-auto" id="pdf-viewer-container">
+                <!-- Tata Letak Layar & Thumbnail Miniatur -->
+                <div class="flex-1 flex overflow-hidden bg-slate-950 relative">
                     
-                    <!-- Upload Placeholder (Shown when no PDF is uploaded) -->
-                    <div id="pdf-placeholder" class="max-w-xl w-full bg-white border border-slate-200 p-8 rounded-2xl shadow-sm text-center space-y-6">
-                        <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-                            <i data-lucide="file-type-2" class="w-10 h-10"></i>
+                    <!-- Laci Samping: Miniatur Slide -->
+                    <div class="w-48 bg-slate-900 border-r border-slate-800/80 flex flex-col overflow-hidden shrink-0 hidden lg:flex">
+                        <div class="p-3 border-b border-slate-800/80 bg-slate-950 flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Miniatur Slide</span>
+                            <i data-lucide="layers" class="w-4.5 h-4.5 text-indigo-400"></i>
                         </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800">Pratinjau File PDF Anda</h3>
-                            <p class="text-sm text-slate-500 mt-2">Gunakan menu ini untuk memuat dokumen PDF lokal dari komputer/ponsel Anda. Data berkas sepenuhnya aman dan diproses langsung di browser Anda.</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-center w-full">
-                            <label for="pdf-main-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-indigo-200 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-indigo-50 hover:border-indigo-400 transition duration-200">
-                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <i data-lucide="upload" class="w-8 h-8 text-indigo-500 mb-2"></i>
-                                    <p class="text-sm text-slate-700 font-semibold">Klik untuk Memilih File PDF</p>
-                                    <p class="text-xs text-slate-400 mt-1">Hanya mendukung format .pdf</p>
-                                </div>
-                                <input id="pdf-main-upload" type="file" accept="application/pdf" class="hidden" onchange="handlePDFUpload(this)" />
-                            </label>
+                        <div class="flex-1 overflow-y-auto p-3 space-y-3" id="thumbnails-container">
+                            <!-- Tempat memuat miniatur halaman -->
+                            <div class="text-center py-10 text-xs text-slate-500">
+                                Menunggu dokumen slide...
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Embed PDF Frame (Initially Hidden) -->
-                    <iframe id="pdf-frame" class="hidden w-full h-full border-0 rounded-lg shadow-inner bg-white" title="PDF Viewer"></iframe>
+                    <!-- Wadah Proyektor Presentasi -->
+                    <div id="projector-screen" class="flex-1 flex flex-col items-center justify-center p-6 relative overflow-auto bg-gradient-to-b from-slate-900 to-slate-950">
+                        
+                        <!-- Placeholder/Status Pemuatan -->
+                        <div id="projector-placeholder" class="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-2xl text-center space-y-5 shadow-2xl">
+                            <div id="placeholder-icon" class="w-16 h-16 bg-indigo-500/10 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto border border-indigo-500/20">
+                                <i data-lucide="loader" class="w-8 h-8 animate-spin"></i>
+                            </div>
+                            <div>
+                                <h3 id="placeholder-title" class="text-md font-bold text-white">Mengecek Berkas Presentasi</h3>
+                                <p id="placeholder-desc" class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                                    Sedang menyambungkan ke sistem untuk mendeteksi berkas presentasi bawaan...
+                                </p>
+                            </div>
+                        </div>
 
+                        <!-- Canvas Presentasi -->
+                        <div id="slide-wrapper" class="relative hidden flex-1 flex items-center justify-center w-full max-h-full">
+                            <canvas id="slide-canvas" class="slide-shadow border border-slate-800 rounded-lg max-w-full max-h-full bg-white object-contain transition duration-200"></canvas>
+                        </div>
+
+                        <!-- Petunjuk Layar Penuh -->
+                        <div id="fullscreen-hints" class="hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-950/90 border border-slate-800 px-4 py-2 rounded-full text-[10px] text-slate-400 shadow-xl pointer-events-none items-center space-x-3">
+                            <span>Gunakan <b>Panah Kanan/Kiri</b> atau klik slide untuk navigasi</span>
+                            <div class="h-3 w-px bg-slate-800"></div>
+                            <span>Tekan <b>ESC</b> untuk keluar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PDF Document Reader (Mode Dokumen Skrol Biasa) -->
+            <div id="tab-doc-reader" class="tab-content flex-1 hidden flex-col h-full overflow-hidden">
+                <div class="bg-slate-950 border-b border-slate-800 px-6 py-3 flex justify-between items-center shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="book-open" class="w-5 h-5 text-indigo-400"></i>
+                        <span class="font-semibold text-slate-200">Pratinjau Mode Buku / Dokumen Skrol</span>
+                    </div>
+                </div>
+                <div class="flex-1 bg-slate-950 relative overflow-hidden flex items-center justify-center">
+                    <!-- Standard Embed Viewer -->
+                    <iframe id="native-pdf-viewer" class="hidden w-full h-full border-0 bg-slate-950" title="PDF Document Viewer"></iframe>
+                    
+                    <!-- Placeholder Gagal/Kosong -->
+                    <div id="reader-placeholder" class="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-2xl text-center space-y-4">
+                        <i data-lucide="file-text" class="w-12 h-12 text-slate-600 mx-auto animate-pulse"></i>
+                        <h3 class="text-sm font-bold text-white" id="reader-placeholder-title">Menghubungkan Dokumen</h3>
+                        <p class="text-xs text-slate-400" id="reader-placeholder-desc">Mencoba memuat berkas PDF...</p>
+                    </div>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <!-- Script Section for Logic -->
+    <!-- Logika Pemrosesan -->
     <script>
-        // Initialize Lucide Icons
-        lucide.createIcons();
+        // Manajemen State Aplikasi
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        let scale = 1.5;
+        let currentTabId = 'slide-player';
+        let autoplayInterval = null;
+        let isAutoplayActive = false;
 
-        // State to keep track of uploaded PDF Object URL
-        let pdfObjectURL = null;
+        // Elemen DOM
+        const canvas = document.getElementById('slide-canvas');
+        const ctx = canvas.getContext('2d');
+        const activeFilenameLabel = document.getElementById('active-filename');
 
         /**
-         * Function to switch tabs on Sidebar click
+         * Navigasi Antar Tab
          */
         function switchTab(tabId) {
-            // Hide all tab contents
+            currentTabId = tabId;
             const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => {
-                content.classList.add('hidden');
-                content.classList.remove('flex');
-            });
+            contents.forEach(content => content.classList.add('hidden'));
 
-            // Show selected tab content
             const activeTab = document.getElementById(`tab-${tabId}`);
-            if (activeTab) {
-                activeTab.classList.remove('hidden');
-                activeTab.classList.add('flex');
-            }
+            if (activeTab) activeTab.classList.remove('hidden');
 
-            // Remove active styles from all buttons
-            const navButtons = document.querySelectorAll('#navigation-menu button');
-            navButtons.forEach(btn => {
-                btn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600";
+            // Setel ulang class tombol navigasi
+            const btns = ['slide-player', 'doc-reader'];
+            btns.forEach(id => {
+                const button = document.getElementById(`btn-${id}`);
+                if (button) {
+                    if (id === tabId) {
+                        button.className = "w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition duration-200 bg-indigo-600 text-white shadow-lg shadow-indigo-600/10";
+                    } else {
+                        button.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition duration-200 text-slate-400 hover:bg-slate-900 hover:text-white";
+                    }
+                }
             });
 
-            // Add active styles to current button
-            const currentBtn = document.getElementById(`btn-${tabId}`);
-            if (currentBtn) {
-                currentBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-50";
-            }
-
-            // Toggle warning box: Hide for PDF Viewer, Show for external iframes
-            const warningBox = document.getElementById('iframe-warning');
-            if (tabId === 'pdf') {
-                warningBox.classList.add('hidden');
-            } else {
-                warningBox.classList.remove('hidden');
+            if (tabId === 'slide-player' && pdfDoc) {
+                setTimeout(adjustAndRender, 100);
             }
         }
 
         /**
-         * Function to handle locally uploaded PDF Files
+         * Render halaman PDF aktif ke dalam Canvas
          */
-        function handlePDFUpload(inputElement) {
-            const file = inputElement.files[0];
-            if (file && file.type === "application/pdf") {
-                // If there's an existing object URL, revoke it to avoid memory leaks
-                if (pdfObjectURL) {
-                    URL.revokeObjectURL(pdfObjectURL);
-                }
-
-                // Create local Object URL
-                pdfObjectURL = URL.createObjectURL(file);
-                
-                // Set Object URL to iframe src
-                const pdfFrame = document.getElementById('pdf-frame');
-                pdfFrame.src = pdfObjectURL;
-                
-                // Toggle element visibilities
-                document.getElementById('pdf-placeholder').classList.add('hidden');
-                pdfFrame.classList.remove('hidden');
-                document.getElementById('btn-clear-pdf').classList.remove('hidden');
-                document.getElementById('btn-clear-pdf').classList.add('inline-flex');
-
-                // Auto switch to PDF tab to show the uploaded file immediately
-                switchTab('pdf');
-            } else if (file) {
-                // Notification in-page instead of browser alert
-                showInPageNotification("Peringatan", "Harap unggah berkas dengan format PDF saja.", "error");
-            }
-        }
-
-        /**
-         * Function to remove loaded PDF and reset view
-         */
-        function clearPDF() {
-            if (pdfObjectURL) {
-                URL.revokeObjectURL(pdfObjectURL);
-                pdfObjectURL = null;
-            }
-
-            // Reset inputs
-            document.getElementById('pdf-main-upload').value = "";
-            document.getElementById('pdf-sidebar-upload').value = "";
-
-            // Hide PDF preview frame
-            const pdfFrame = document.getElementById('pdf-frame');
-            pdfFrame.src = "";
-            pdfFrame.classList.add('hidden');
-
-            // Show default placeholder
-            document.getElementById('pdf-placeholder').classList.remove('hidden');
+        function renderPage(num) {
+            pageRendering = true;
             
-            // Hide delete button
-            const clearBtn = document.getElementById('btn-clear-pdf');
-            clearBtn.classList.add('hidden');
-            clearBtn.classList.remove('inline-flex');
+            pdfDoc.getPage(num).then(function(page) {
+                const container = document.getElementById('projector-screen');
+                const padding = 60;
+                const containerWidth = container.clientWidth - padding;
+                const containerHeight = container.clientHeight - padding;
+                
+                const viewport = page.getViewport({ scale: 1.0 });
+                const widthScale = containerWidth / viewport.width;
+                const heightScale = containerHeight / viewport.height;
+                const optimizedScale = Math.min(widthScale, heightScale, 2.0);
+                
+                const adjustedViewport = page.getViewport({ scale: optimizedScale });
+                canvas.height = adjustedViewport.height;
+                canvas.width = adjustedViewport.width;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: adjustedViewport
+                };
+                
+                const renderTask = page.render(renderContext);
+
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                    
+                    highlightThumbnail(num);
+                });
+            });
+
+            document.getElementById('current-page-num').textContent = num;
         }
 
         /**
-         * Utility function to display beautiful in-page notifications instead of browser alert()
+         * Antrean render halaman secara aman
          */
-        function showInPageNotification(title, message, type = "error") {
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        /**
+         * Navigasi Slide: Mundur
+         */
+        function prevPage() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        /**
+         * Navigasi Slide: Maju
+         */
+        function nextPage() {
+            if (!pdfDoc || pageNum >= pdfDoc.numPages) {
+                if (isAutoplayActive) {
+                    pageNum = 1; // Kembali ke awal jika autoplay aktif
+                    queueRenderPage(pageNum);
+                }
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        /**
+         * Aktifkan / Matikan Autoplay Presentasi
+         */
+        function toggleSlideshow() {
+            const btn = document.getElementById('btn-autoplay');
+            const icon = document.getElementById('autoplay-icon');
+            const text = document.getElementById('autoplay-text');
+
+            if (isAutoplayActive) {
+                clearInterval(autoplayInterval);
+                isAutoplayActive = false;
+                btn.className = "p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition flex items-center space-x-1 text-xs px-2.5";
+                if (icon) {
+                    icon.className = "w-4 h-4 text-emerald-400";
+                    icon.setAttribute('data-lucide', 'play');
+                }
+                if (text) text.textContent = "Autoplay";
+            } else {
+                isAutoplayActive = true;
+                btn.className = "p-1.5 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-white font-bold transition flex items-center space-x-1 text-xs px-2.5 shadow-lg shadow-emerald-600/10";
+                if (icon) {
+                    icon.className = "w-4 h-4 text-white animate-spin";
+                    icon.setAttribute('data-lucide', 'refresh-cw');
+                }
+                if (text) text.textContent = "Autoplaying (5s)";
+                
+                autoplayInterval = setInterval(() => {
+                    nextPage();
+                }, 5000); // interval perpindahan slide 5 detik
+            }
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        /**
+         * Inisialisasi Engine PDF
+         */
+        function initializePDF(pdfSource, fileName) {
+            activeFilenameLabel.textContent = fileName;
+
+            // Atur pratinjau mode gulir dokumen
+            document.getElementById('native-pdf-viewer').src = pdfSource;
+            document.getElementById('native-pdf-viewer').classList.remove('hidden');
+            document.getElementById('reader-placeholder').classList.add('hidden');
+
+            // Atur pratinjau aplikasi slide player
+            const loadingTask = pdfjsLib.getDocument(pdfSource);
+            loadingTask.promise.then(function(pdf) {
+                pdfDoc = pdf;
+                pageNum = 1;
+                document.getElementById('total-pages-count').textContent = pdf.numPages;
+
+                // Tampilkan kanvas dan sembunyikan placeholder
+                document.getElementById('projector-placeholder').classList.add('hidden');
+                document.getElementById('slide-wrapper').classList.remove('hidden');
+
+                // Aktifkan tombol navigasi slide
+                document.getElementById('btn-prev-slide').removeAttribute('disabled');
+                document.getElementById('btn-next-slide').removeAttribute('disabled');
+
+                // Tampilkan halaman pertama dan miniatur slide
+                renderPage(1);
+                generateThumbnails(pdf);
+
+            }, function(reason) {
+                showInPageToast("Gagal Membaca PDF", "Error: " + reason.message, "error");
+            });
+        }
+
+        /**
+         * Render Pratinjau Miniatur Halaman di Bilah Samping
+         */
+        function generateThumbnails(pdf) {
+            const container = document.getElementById('thumbnails-container');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const wrapper = document.createElement('div');
+                wrapper.id = `thumb-wrap-${i}`;
+                wrapper.className = "relative p-1.5 rounded-lg border border-slate-800 bg-slate-950/40 hover:bg-slate-850 hover:border-indigo-500/50 cursor-pointer transition flex flex-col items-center gap-1.5";
+                wrapper.setAttribute('onclick', `jumpToPage(${i})`);
+
+                const thumbCanvas = document.createElement('canvas');
+                thumbCanvas.className = "w-full max-h-24 object-contain rounded bg-white";
+                
+                const pageLabel = document.createElement('span');
+                pageLabel.className = "text-[9px] font-mono font-bold text-slate-500";
+                pageLabel.textContent = `Slide ${i}`;
+
+                wrapper.appendChild(thumbCanvas);
+                wrapper.appendChild(pageLabel);
+                container.appendChild(wrapper);
+
+                pdf.getPage(i).then(function(page) {
+                    const viewport = page.getViewport({ scale: 0.2 });
+                    thumbCanvas.height = viewport.height;
+                    thumbCanvas.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: thumbCanvas.getContext('2d'),
+                        viewport: viewport
+                    };
+                    page.render(renderContext);
+                });
+            }
+        }
+
+        /**
+         * Tandai Miniatur Slide Aktif
+         */
+        function highlightThumbnail(num) {
+            for (let i = 1; i <= (pdfDoc ? pdfDoc.numPages : 0); i++) {
+                const wrap = document.getElementById(`thumb-wrap-${i}`);
+                if (wrap) {
+                    if (i === num) {
+                        wrap.className = "relative p-1.5 rounded-lg border-2 border-indigo-500 bg-indigo-600/10 cursor-pointer transition flex flex-col items-center gap-1.5 shadow-md shadow-indigo-600/5";
+                        wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        wrap.className = "relative p-1.5 rounded-lg border border-slate-800 bg-slate-950/40 hover:bg-slate-850 hover:border-indigo-500/50 cursor-pointer transition flex flex-col items-center gap-1.5";
+                    }
+                }
+            }
+        }
+
+        /**
+         * Lompat ke Halaman Slide Tertentu
+         */
+        function jumpToPage(num) {
+            pageNum = num;
+            queueRenderPage(num);
+        }
+
+        /**
+         * Atur Ukuran Kanvas Saat Jendela Diubah
+         */
+        function adjustAndRender() {
+            if (pdfDoc) {
+                renderPage(pageNum);
+            }
+        }
+        window.addEventListener('resize', adjustAndRender);
+
+        /**
+         * Mode Layar Penuh
+         */
+        function enterFullscreen() {
+            const screen = document.getElementById('projector-screen');
+            if (screen.requestFullscreen) {
+                screen.requestFullscreen();
+            } else if (screen.webkitRequestFullscreen) {
+                screen.webkitRequestFullscreen();
+            } else if (screen.msRequestFullscreen) {
+                screen.msRequestFullscreen();
+            }
+        }
+
+        // Listener Layar Penuh
+        document.addEventListener('fullscreenchange', function() {
+            const hints = document.getElementById('fullscreen-hints');
+            if (document.fullscreenElement) {
+                if (hints) {
+                    hints.classList.remove('hidden');
+                    hints.classList.add('flex');
+                }
+                setTimeout(adjustAndRender, 200);
+            } else {
+                if (hints) {
+                    hints.classList.add('hidden');
+                    hints.classList.remove('flex');
+                }
+                setTimeout(adjustAndRender, 200);
+            }
+        });
+
+        document.getElementById('slide-wrapper').addEventListener('click', function(e) {
+            if (e.target.id === 'slide-canvas' || e.target.id === 'slide-wrapper') {
+                nextPage();
+            }
+        });
+
+        /**
+         * Listener Tombol Keyboard
+         */
+        document.addEventListener('keydown', function(event) {
+            if (!pdfDoc || currentTabId !== 'slide-player') return;
+            
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                event.preventDefault();
+                nextPage();
+            } else if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                prevPage();
+            }
+        });
+
+        /**
+         * Tampilkan Informasi Error jika slide.pdf tidak Ditemukan
+         */
+        function showErrorPlaceholder() {
+            activeFilenameLabel.textContent = "slide.pdf tidak ditemukan";
+            
+            const placeholderIcon = document.getElementById('placeholder-icon');
+            const placeholderTitle = document.getElementById('placeholder-title');
+            const placeholderDesc = document.getElementById('placeholder-desc');
+
+            if (placeholderIcon) {
+                placeholderIcon.innerHTML = '<i data-lucide="alert-triangle" class="w-8 h-8 text-rose-500"></i>';
+                placeholderIcon.className = "w-16 h-16 bg-rose-500/10 text-rose-400 rounded-2xl flex items-center justify-center mx-auto border border-rose-500/20";
+            }
+            if (placeholderTitle) placeholderTitle.textContent = "Slide Slide.pdf Tidak Ditemukan";
+            if (placeholderDesc) {
+                placeholderDesc.innerHTML = `
+                    Berkas <code class='bg-slate-950 text-rose-400 px-1 py-0.5 rounded font-mono font-bold'>slide.pdf</code> belum diunggah atau tidak ditemukan di repositori ini.<br><br>
+                    <span class='text-slate-300 block text-left font-semibold mb-1'>Langkah Solusi:</span>
+                    <ol class='text-left list-decimal list-inside text-slate-400 space-y-1.5'>
+                        <li>Ganti nama dokumen PDF utama Anda menjadi <code class='bg-slate-950 text-indigo-300 px-1 rounded font-mono'>slide.pdf</code>.</li>
+                        <li>Unggah berkas tersebut ke repositori GitHub Anda (di folder/lokasi yang sama dengan berkas <code class='bg-slate-950 text-indigo-300 px-1 rounded font-mono'>index.html</code>).</li>
+                        <li>Tunggu proses deployment GitHub Pages selesai, lalu muat ulang halaman ini.</li>
+                    </ol>
+                `;
+            }
+
+            // Atur juga teks error di Tab Mode Gulir
+            const readerTitle = document.getElementById('reader-placeholder-title');
+            const readerDesc = document.getElementById('reader-placeholder-desc');
+            if (readerTitle) readerTitle.textContent = "Dokumen Tidak Tersedia";
+            if (readerDesc) readerDesc.textContent = "Unggah berkas 'slide.pdf' ke repositori GitHub Anda terlebih dahulu untuk mengaktifkan fitur pembaca dokumen.";
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        /**
+         * Toast Notifikasi Dalam Halaman
+         */
+        function showInPageToast(title, msg, type = "error") {
             const container = document.body;
-            const notifDiv = document.createElement('div');
-            notifDiv.className = `fixed bottom-5 right-5 z-50 p-4 rounded-xl shadow-lg border max-w-sm flex items-start space-x-3 transition-all duration-300 transform translate-y-10 opacity-0 ${
-                type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-6 right-6 z-50 p-4 rounded-xl border max-w-sm flex items-start space-x-3 transition-all duration-300 transform translate-y-10 opacity-0 ${
+                type === 'error' ? 'bg-red-950 border-red-800 text-red-200' : 'bg-emerald-950 border-emerald-800 text-emerald-200'
             }`;
             
-            notifDiv.innerHTML = `
-                <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-500 shrink-0 mt-0.5"></i>
+            toast.innerHTML = `
+                <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
                 <div>
-                    <h4 class="font-bold text-sm">${title}</h4>
-                    <p class="text-xs mt-1 text-slate-600">${message}</p>
+                    <h4 class="font-bold text-xs">${title}</h4>
+                    <p class="text-[10px] mt-1 text-slate-400 leading-relaxed">${msg}</p>
                 </div>
             `;
+            container.appendChild(toast);
             
-            container.appendChild(notifDiv);
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
 
-            // Animate transition entry
             setTimeout(() => {
-                notifDiv.classList.remove('translate-y-10', 'opacity-0');
+                toast.classList.remove('translate-y-10', 'opacity-0');
             }, 50);
 
-            // Animate transition exit
             setTimeout(() => {
-                notifDiv.classList.add('translate-y-10', 'opacity-0');
-                setTimeout(() => {
-                    notifDiv.remove();
-                }, 300);
-            }, 4000);
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
         }
+
+        /**
+         * Menjalankan pemuatan otomatis berkas presentasi
+         */
+        function startAutoLoad() {
+            const defaultPdfUrl = 'slide.pdf';
+            
+            // Setel status awal pemuatan di placeholder
+            const placeholderTitle = document.getElementById('placeholder-title');
+            const placeholderDesc = document.getElementById('placeholder-desc');
+            if (placeholderTitle) placeholderTitle.textContent = "Memuat Slide Presentasi...";
+            if (placeholderDesc) placeholderDesc.innerHTML = "Mencari berkas <code class='bg-slate-950 text-indigo-400 px-1 py-0.5 rounded font-mono font-bold'>slide.pdf</code> pada server Anda...";
+
+            fetch(defaultPdfUrl)
+                .then(response => {
+                    if (response.ok) {
+                        initializePDF(defaultPdfUrl, 'slide.pdf');
+                    } else {
+                        showErrorPlaceholder();
+                    }
+                })
+                .catch(() => {
+                    showErrorPlaceholder();
+                });
+        }
+
+        /**
+         * Sistem Deteksi dan Inisialisasi Asinkron yang Aman (Polling)
+         * Menghindari ReferenceError jika skrip CDN termuat terlambat
+         */
+        function checkAndInitialize() {
+            if (typeof lucide !== 'undefined' && typeof pdfjsLib !== 'undefined') {
+                // Konfigurasi Worker PDF.js
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+                
+                // Inisialisasi awal ikon Lucide
+                lucide.createIcons();
+                
+                // Mulai deteksi file pdf otomatis
+                startAutoLoad();
+            } else {
+                // Jika salah satu pustaka belum siap, tunggu 50ms lalu coba kembali
+                setTimeout(checkAndInitialize, 50);
+            }
+        }
+
+        // Jalankan pengecekan inisialisasi yang aman pada saat halaman dimuat
+        window.onload = checkAndInitialize;
     </script>
 </body>
 </html>
