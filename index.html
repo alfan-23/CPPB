@@ -455,21 +455,57 @@
         }
 
         /**
-         * Render Pratinjau Miniatur Halaman di Bilah Samping dengan optimasi High-DPI
+         * Render Pratinjau Miniatur Halaman (Dioptimalkan dengan Lazy Loading agar SUPER CEPAT)
          */
         function generateThumbnails(pdf) {
             const container = document.getElementById('thumbnails-container');
             container.innerHTML = '';
 
+            // Gunakan Intersection Observer untuk merender miniatur hanya saat di-scroll (Lazy Load)
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const thumbCanvas = entry.target;
+                        const pageNum = parseInt(thumbCanvas.dataset.pageNum);
+                        
+                        // Render hanya jika kanvas belum pernah dirender sebelumnya
+                        if (!thumbCanvas.dataset.rendered) {
+                            thumbCanvas.dataset.rendered = 'true';
+                            thumbCanvas.classList.remove('opacity-0'); // Munculkan kanvas perlahan
+                            
+                            pdf.getPage(pageNum).then(function(page) {
+                                // Skala kecil dan normal-DPI khusus untuk miniatur agar proses sangat ringan
+                                const tViewport = page.getViewport({ scale: 0.15 }); 
+                                thumbCanvas.width = tViewport.width;
+                                thumbCanvas.height = tViewport.height;
+
+                                const renderContext = {
+                                    canvasContext: thumbCanvas.getContext('2d'),
+                                    viewport: tViewport
+                                };
+                                page.render(renderContext);
+                            });
+                        }
+                    }
+                });
+            }, {
+                root: container,
+                rootMargin: '150px' // Mulai menggambar miniatur 150px sebelum masuk ke jangkauan layar
+            });
+
+            // Buat kerangka elemen DOM secara instan tanpa membebani proses render gambar PDF
             for (let i = 1; i <= pdf.numPages; i++) {
                 const wrapper = document.createElement('div');
                 wrapper.id = `thumb-wrap-${i}`;
-                wrapper.className = "relative p-1.5 rounded-lg border border-slate-800 bg-slate-950/40 hover:bg-slate-850 hover:border-indigo-500/50 cursor-pointer transition flex flex-col items-center gap-1.5";
+                // min-h-[80px] penting untuk memberi ruang gulir virtual sebelum gambar asli dimuat
+                wrapper.className = "relative p-1.5 rounded-lg border border-slate-800 bg-slate-950/40 hover:bg-slate-850 hover:border-indigo-500/50 cursor-pointer transition flex flex-col items-center gap-1.5 min-h-[80px] justify-center";
                 wrapper.setAttribute('onclick', `jumpToPage(${i})`);
 
                 const thumbCanvas = document.createElement('canvas');
-                thumbCanvas.className = "w-full max-h-24 object-contain rounded bg-white";
-                
+                // Sembunyikan dengan opacity-0 di awal agar transisi terlihat halus saat digambar
+                thumbCanvas.className = "w-full max-h-24 object-contain rounded bg-white opacity-0 transition-opacity duration-500";
+                thumbCanvas.dataset.pageNum = i;
+
                 const pageLabel = document.createElement('span');
                 pageLabel.className = "text-[9px] font-mono font-bold text-slate-500";
                 pageLabel.textContent = `Slide ${i}`;
@@ -478,22 +514,8 @@
                 wrapper.appendChild(pageLabel);
                 container.appendChild(wrapper);
 
-                pdf.getPage(i).then(function(page) {
-                    const tViewport = page.getViewport({ scale: 0.2 });
-                    const tRatio = window.devicePixelRatio || 1;
-                    
-                    thumbCanvas.width = Math.floor(tViewport.width * tRatio);
-                    thumbCanvas.height = Math.floor(tViewport.height * tRatio);
-                    thumbCanvas.style.width = Math.floor(tViewport.width) + "px";
-                    thumbCanvas.style.height = Math.floor(tViewport.height) + "px";
-
-                    const renderContext = {
-                        canvasContext: thumbCanvas.getContext('2d'),
-                        viewport: tViewport,
-                        transform: [tRatio, 0, 0, tRatio, 0, 0]
-                    };
-                    page.render(renderContext);
-                });
+                // Daftarkan kanvas miniatur ini ke pengamat (observer)
+                observer.observe(thumbCanvas);
             }
         }
 
