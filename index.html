@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Portal Dokumen</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom scrollbar styling for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-indigo-900 text-white shadow-md px-6 py-4 flex flex-wrap justify-between items-center z-10">
+        <div class="flex items-center space-x-3">
+            <div class="bg-white text-indigo-900 p-2 rounded-lg shadow-inner">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-wide">Portal Dokumen & Penilaian</h1>
+                <p class="text-xs text-indigo-200">Akses cepat materi presentasi, instrumen IRTP, dan panduan CPPB</p>
+            </div>
+        </div>
+        <!-- Status Indicator -->
+        <div class="hidden md:flex items-center space-x-2 text-xs bg-indigo-800 px-3 py-1.5 rounded-full border border-indigo-700">
+            <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></span>
+            <span>Siap di-host di GitHub Pages</span>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <div class="flex flex-1 overflow-hidden flex-col md:flex-row">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-white border-r border-slate-200 p-4 flex flex-col justify-between shrink-0">
+            <div class="space-y-6">
+                <div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-3">Menu Dokumen</span>
+                    <nav class="space-y-1" id="navigation-menu">
+                        <!-- Presentasi Tab Button -->
+                        <button onclick="switchTab('presentasi')" id="btn-presentasi" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-50">
+                            <i data-lucide="presentation" class="w-5 h-5"></i>
+                            <span>File Presentasi</span>
+                        </button>
+                        
+                        <!-- IRTP Tab Button -->
+                        <button onclick="switchTab('irtp')" id="btn-irtp" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600">
+                            <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+                            <span>Instrumen IRTP</span>
+                        </button>
+                        
+                        <!-- CPPB Tab Button -->
+                        <button onclick="switchTab('cppb')" id="btn-cppb" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600">
+                            <i data-lucide="file-text" class="w-5 h-5"></i>
+                            <span>Dokumentasi CPPB</span>
+                        </button>
+                        
+                        <!-- PDF Uploader Tab Button -->
+                        <button onclick="switchTab('pdf')" id="btn-pdf" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600">
+                            <i data-lucide="file-up" class="w-5 h-5"></i>
+                            <span>Unggah & Lihat PDF</span>
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- PDF Direct Upload Form in Sidebar -->
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                    <label class="block text-xs font-semibold text-slate-500 mb-2">Unggah PDF Cepat</label>
+                    <div class="relative flex items-center justify-center w-full">
+                        <label for="pdf-sidebar-upload" class="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-slate-50 transition duration-150">
+                            <div class="flex flex-col items-center justify-center pt-2 pb-2 text-center px-2">
+                                <i data-lucide="cloud-upload" class="w-6 h-6 text-slate-400 mb-1"></i>
+                                <p class="text-xs text-slate-500 font-medium">Klik untuk pilih PDF</p>
+                            </div>
+                            <input id="pdf-sidebar-upload" type="file" accept="application/pdf" class="hidden" onchange="handlePDFUpload(this)" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="pt-4 border-t border-slate-100 text-xs text-slate-400 text-center">
+                <p>Dashboard v1.0.0</p>
+                <p class="mt-1">Dibuat untuk GitHub Pages</p>
+            </div>
+        </aside>
+
+        <!-- Dynamic Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden bg-slate-100">
+            
+            <!-- Iframe Warning Box (Important because Gemini sharing URLs might forbid embedding) -->
+            <div id="iframe-warning" class="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-start space-x-3 text-amber-800 text-xs">
+                <i data-lucide="alert-circle" class="w-4.5 h-4.5 text-amber-600 shrink-0 mt-0.5 animate-bounce"></i>
+                <div class="flex-1">
+                    <span class="font-bold">Informasi Tampilan:</span> Beberapa situs seperti Gemini Share memiliki pembatasan keamanan ketat (CSP/X-Frame-Options) yang dapat menghalangi halaman untuk dirender langsung di dalam kotak di bawah. Jika halaman tampak kosong, gunakan tombol <strong>"Buka di Tab Baru"</strong> untuk akses langsung tanpa hambatan.
+                </div>
+            </div>
+
+            <!-- Tab 1: Presentasi -->
+            <div id="tab-presentasi" class="tab-content flex-1 flex flex-col h-full">
+                <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="presentation" class="w-5 h-5 text-indigo-600"></i>
+                        <span class="font-semibold text-slate-700">Tampilan File Presentasi</span>
+                    </div>
+                    <a href="https://gemini.google.com/share/e7423cd6175d" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition shadow-sm">
+                        <span>Buka di Tab Baru</span>
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                    </a>
+                </div>
+                <div class="flex-1 bg-slate-300 relative">
+                    <iframe src="https://gemini.google.com/share/e7423cd6175d" class="w-full h-full border-0 absolute inset-0 bg-white" title="File Presentasi"></iframe>
+                </div>
+            </div>
+
+            <!-- Tab 2: IRTP -->
+            <div id="tab-irtp" class="tab-content flex-1 hidden flex-col h-full">
+                <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="clipboard-check" class="w-5 h-5 text-indigo-600"></i>
+                        <span class="font-semibold text-slate-700">Tampilan Instrumen Penilaian IRTP</span>
+                    </div>
+                    <a href="https://gemini.google.com/share/c1d245131b54" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition shadow-sm">
+                        <span>Buka di Tab Baru</span>
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                    </a>
+                </div>
+                <div class="flex-1 bg-slate-300 relative">
+                    <iframe src="https://gemini.google.com/share/c1d245131b54" class="w-full h-full border-0 absolute inset-0 bg-white" title="Instrumen Penilaian IRTP"></iframe>
+                </div>
+            </div>
+
+            <!-- Tab 3: CPPB -->
+            <div id="tab-cppb" class="tab-content flex-1 hidden flex-col h-full">
+                <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="file-text" class="w-5 h-5 text-indigo-600"></i>
+                        <span class="font-semibold text-slate-700">Tampilan Dokumentasi CPPB</span>
+                    </div>
+                    <a href="https://gemini.google.com/share/bd06dbb25b30" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition shadow-sm">
+                        <span>Buka di Tab Baru</span>
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                    </a>
+                </div>
+                <div class="flex-1 bg-slate-300 relative">
+                    <iframe src="https://gemini.google.com/share/bd06dbb25b30" class="w-full h-full border-0 absolute inset-0 bg-white" title="Dokumentasi CPPB"></iframe>
+                </div>
+            </div>
+
+            <!-- Tab 4: PDF Viewer -->
+            <div id="tab-pdf" class="tab-content flex-1 hidden flex-col h-full bg-slate-100">
+                <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="file-up" class="w-5 h-5 text-indigo-600"></i>
+                        <span class="font-semibold text-slate-700">Pratinjau File PDF Unggahan</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="clearPDF()" id="btn-clear-pdf" class="hidden bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 text-xs font-semibold px-3 py-2 rounded-lg transition items-center space-x-1.5">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            <span>Hapus PDF</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Viewer Area -->
+                <div class="flex-1 flex flex-col items-center justify-center p-6 relative overflow-auto" id="pdf-viewer-container">
+                    
+                    <!-- Upload Placeholder (Shown when no PDF is uploaded) -->
+                    <div id="pdf-placeholder" class="max-w-xl w-full bg-white border border-slate-200 p-8 rounded-2xl shadow-sm text-center space-y-6">
+                        <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                            <i data-lucide="file-type-2" class="w-10 h-10"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800">Pratinjau File PDF Anda</h3>
+                            <p class="text-sm text-slate-500 mt-2">Gunakan menu ini untuk memuat dokumen PDF lokal dari komputer/ponsel Anda. Data berkas sepenuhnya aman dan diproses langsung di browser Anda.</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-center w-full">
+                            <label for="pdf-main-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-indigo-200 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-indigo-50 hover:border-indigo-400 transition duration-200">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <i data-lucide="upload" class="w-8 h-8 text-indigo-500 mb-2"></i>
+                                    <p class="text-sm text-slate-700 font-semibold">Klik untuk Memilih File PDF</p>
+                                    <p class="text-xs text-slate-400 mt-1">Hanya mendukung format .pdf</p>
+                                </div>
+                                <input id="pdf-main-upload" type="file" accept="application/pdf" class="hidden" onchange="handlePDFUpload(this)" />
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Embed PDF Frame (Initially Hidden) -->
+                    <iframe id="pdf-frame" class="hidden w-full h-full border-0 rounded-lg shadow-inner bg-white" title="PDF Viewer"></iframe>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Script Section for Logic -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // State to keep track of uploaded PDF Object URL
+        let pdfObjectURL = null;
+
+        /**
+         * Function to switch tabs on Sidebar click
+         */
+        function switchTab(tabId) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('flex');
+            });
+
+            // Show selected tab content
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) {
+                activeTab.classList.remove('hidden');
+                activeTab.classList.add('flex');
+            }
+
+            // Remove active styles from all buttons
+            const navButtons = document.querySelectorAll('#navigation-menu button');
+            navButtons.forEach(btn => {
+                btn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600";
+            });
+
+            // Add active styles to current button
+            const currentBtn = document.getElementById(`btn-${tabId}`);
+            if (currentBtn) {
+                currentBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition duration-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-50";
+            }
+
+            // Toggle warning box: Hide for PDF Viewer, Show for external iframes
+            const warningBox = document.getElementById('iframe-warning');
+            if (tabId === 'pdf') {
+                warningBox.classList.add('hidden');
+            } else {
+                warningBox.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Function to handle locally uploaded PDF Files
+         */
+        function handlePDFUpload(inputElement) {
+            const file = inputElement.files[0];
+            if (file && file.type === "application/pdf") {
+                // If there's an existing object URL, revoke it to avoid memory leaks
+                if (pdfObjectURL) {
+                    URL.revokeObjectURL(pdfObjectURL);
+                }
+
+                // Create local Object URL
+                pdfObjectURL = URL.createObjectURL(file);
+                
+                // Set Object URL to iframe src
+                const pdfFrame = document.getElementById('pdf-frame');
+                pdfFrame.src = pdfObjectURL;
+                
+                // Toggle element visibilities
+                document.getElementById('pdf-placeholder').classList.add('hidden');
+                pdfFrame.classList.remove('hidden');
+                document.getElementById('btn-clear-pdf').classList.remove('hidden');
+                document.getElementById('btn-clear-pdf').classList.add('inline-flex');
+
+                // Auto switch to PDF tab to show the uploaded file immediately
+                switchTab('pdf');
+            } else if (file) {
+                // Notification in-page instead of browser alert
+                showInPageNotification("Peringatan", "Harap unggah berkas dengan format PDF saja.", "error");
+            }
+        }
+
+        /**
+         * Function to remove loaded PDF and reset view
+         */
+        function clearPDF() {
+            if (pdfObjectURL) {
+                URL.revokeObjectURL(pdfObjectURL);
+                pdfObjectURL = null;
+            }
+
+            // Reset inputs
+            document.getElementById('pdf-main-upload').value = "";
+            document.getElementById('pdf-sidebar-upload').value = "";
+
+            // Hide PDF preview frame
+            const pdfFrame = document.getElementById('pdf-frame');
+            pdfFrame.src = "";
+            pdfFrame.classList.add('hidden');
+
+            // Show default placeholder
+            document.getElementById('pdf-placeholder').classList.remove('hidden');
+            
+            // Hide delete button
+            const clearBtn = document.getElementById('btn-clear-pdf');
+            clearBtn.classList.add('hidden');
+            clearBtn.classList.remove('inline-flex');
+        }
+
+        /**
+         * Utility function to display beautiful in-page notifications instead of browser alert()
+         */
+        function showInPageNotification(title, message, type = "error") {
+            const container = document.body;
+            const notifDiv = document.createElement('div');
+            notifDiv.className = `fixed bottom-5 right-5 z-50 p-4 rounded-xl shadow-lg border max-w-sm flex items-start space-x-3 transition-all duration-300 transform translate-y-10 opacity-0 ${
+                type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+            }`;
+            
+            notifDiv.innerHTML = `
+                <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-500 shrink-0 mt-0.5"></i>
+                <div>
+                    <h4 class="font-bold text-sm">${title}</h4>
+                    <p class="text-xs mt-1 text-slate-600">${message}</p>
+                </div>
+            `;
+            
+            container.appendChild(notifDiv);
+            lucide.createIcons();
+
+            // Animate transition entry
+            setTimeout(() => {
+                notifDiv.classList.remove('translate-y-10', 'opacity-0');
+            }, 50);
+
+            // Animate transition exit
+            setTimeout(() => {
+                notifDiv.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => {
+                    notifDiv.remove();
+                }, 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
