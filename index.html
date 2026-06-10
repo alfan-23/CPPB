@@ -26,7 +26,7 @@
             background: #94a3b8;
         }
         .slide-shadow {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -90,24 +90,13 @@
                         <span class="text-[9px] text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-medium font-mono">Eksternal</span>
                     </div>
                     <div class="space-y-2">
-                        <!-- Tautan Presentasi -->
-                        <a href="https://gemini.google.com/share/e7423cd6175d" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-between p-3 rounded-xl text-xs font-medium bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition group">
-                            <div class="flex items-center space-x-2.5">
-                                <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-slate-950 transition">
-                                    <i data-lucide="presentation" class="w-4 h-4"></i>
-                                </div>
-                                <span>1. File Presentasi</span>
-                            </div>
-                            <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
-                        </a>
-
                         <!-- Tautan IRTP -->
                         <a href="https://gemini.google.com/share/c1d245131b54" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-between p-3 rounded-xl text-xs font-medium bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition group">
                             <div class="flex items-center space-x-2.5">
                                 <div class="p-1.5 rounded-lg bg-sky-500/10 text-sky-400 group-hover:bg-sky-500 group-hover:text-slate-950 transition">
                                     <i data-lucide="clipboard-check" class="w-4 h-4"></i>
                                 </div>
-                                <span>2. Instrumen IRTP</span>
+                                <span>1. Instrumen IRTP</span>
                             </div>
                             <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
                         </a>
@@ -118,7 +107,7 @@
                                 <div class="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500 group-hover:text-slate-950 transition">
                                     <i data-lucide="file-text" class="w-4 h-4"></i>
                                 </div>
-                                <span>3. Dokumentasi CPPB</span>
+                                <span>2. Dokumentasi CPPB</span>
                             </div>
                             <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
                         </a>
@@ -137,8 +126,8 @@
 
             <!-- Bagian Kaki (Footer) -->
             <div class="pt-4 border-t border-slate-800 text-[10px] text-slate-600 space-y-1">
-                <p class="font-semibold text-slate-400">Aplikasi Presentasi v2.1</p>
-                <p>Otomatisasi Penuh & Tanpa Unggah Manual</p>
+                <p class="font-semibold text-slate-400">Aplikasi Presentasi v2.2</p>
+                <p>Otomatisasi Penuh & HD Anti-Blur Engine</p>
             </div>
         </aside>
 
@@ -220,7 +209,7 @@
 
                         <!-- Canvas Presentasi -->
                         <div id="slide-wrapper" class="relative hidden flex-1 flex items-center justify-center w-full max-h-full">
-                            <canvas id="slide-canvas" class="slide-shadow border border-slate-800 rounded-lg max-w-full max-h-full bg-white object-contain transition duration-200"></canvas>
+                            <canvas id="slide-canvas" class="slide-shadow border border-slate-800 rounded-lg bg-white object-contain transition duration-200" style="max-width: 100%; max-height: 100%;"></canvas>
                         </div>
 
                         <!-- Petunjuk Layar Penuh -->
@@ -264,7 +253,6 @@
         let pageNum = 1;
         let pageRendering = false;
         let pageNumPending = null;
-        let scale = 1.5;
         let currentTabId = 'slide-player';
         let autoplayInterval = null;
         let isAutoplayActive = false;
@@ -304,7 +292,7 @@
         }
 
         /**
-         * Render halaman PDF aktif ke dalam Canvas
+         * Render halaman PDF aktif ke dalam Canvas dengan optimasi High-DPI (Retina)
          */
         function renderPage(num) {
             pageRendering = true;
@@ -315,18 +303,33 @@
                 const containerWidth = container.clientWidth - padding;
                 const containerHeight = container.clientHeight - padding;
                 
-                const viewport = page.getViewport({ scale: 1.0 });
-                const widthScale = containerWidth / viewport.width;
-                const heightScale = containerHeight / viewport.height;
-                const optimizedScale = Math.min(widthScale, heightScale, 2.0);
+                // Ambil ukuran dasar viewport pada skala 1.0
+                const unscaledViewport = page.getViewport({ scale: 1.0 });
                 
-                const adjustedViewport = page.getViewport({ scale: optimizedScale });
-                canvas.height = adjustedViewport.height;
-                canvas.width = adjustedViewport.width;
+                // Hitung rasio pembesaran agar pas di kontainer layar
+                const widthScale = containerWidth / unscaledViewport.width;
+                const heightScale = containerHeight / unscaledViewport.height;
+                const baseScale = Math.min(widthScale, heightScale);
+                
+                // Dapatkan Device Pixel Ratio untuk rendering ultra-tajam pada layar Retina/High-DPI
+                const pixelRatio = window.devicePixelRatio || 1;
+                
+                // Konfigurasi viewport berdasarkan rasio layar
+                const adjustedViewport = page.getViewport({ scale: baseScale });
+                
+                // Mengatur resolusi internal kanvas agar 2x-3x lipat lebih tinggi dari dimensi layarnya
+                canvas.width = Math.floor(adjustedViewport.width * pixelRatio);
+                canvas.height = Math.floor(adjustedViewport.height * pixelRatio);
+                
+                // Menyamakan kembali tampilan dimensi CSS dengan wadah aslinya agar tidak membesar secara fisik
+                canvas.style.width = Math.floor(adjustedViewport.width) + "px";
+                canvas.style.height = Math.floor(adjustedViewport.height) + "px";
 
+                // Gunakan matriks transformasi untuk mengimbangi skala resolusi ekstra pixelRatio pada gambar
                 const renderContext = {
                     canvasContext: ctx,
-                    viewport: adjustedViewport
+                    viewport: adjustedViewport,
+                    transform: [pixelRatio, 0, 0, pixelRatio, 0, 0]
                 };
                 
                 const renderTask = page.render(renderContext);
@@ -452,7 +455,7 @@
         }
 
         /**
-         * Render Pratinjau Miniatur Halaman di Bilah Samping
+         * Render Pratinjau Miniatur Halaman di Bilah Samping dengan optimasi High-DPI
          */
         function generateThumbnails(pdf) {
             const container = document.getElementById('thumbnails-container');
@@ -476,13 +479,18 @@
                 container.appendChild(wrapper);
 
                 pdf.getPage(i).then(function(page) {
-                    const viewport = page.getViewport({ scale: 0.2 });
-                    thumbCanvas.height = viewport.height;
-                    thumbCanvas.width = viewport.width;
+                    const tViewport = page.getViewport({ scale: 0.2 });
+                    const tRatio = window.devicePixelRatio || 1;
+                    
+                    thumbCanvas.width = Math.floor(tViewport.width * tRatio);
+                    thumbCanvas.height = Math.floor(tViewport.height * tRatio);
+                    thumbCanvas.style.width = Math.floor(tViewport.width) + "px";
+                    thumbCanvas.style.height = Math.floor(tViewport.height) + "px";
 
                     const renderContext = {
                         canvasContext: thumbCanvas.getContext('2d'),
-                        viewport: viewport
+                        viewport: tViewport,
+                        transform: [tRatio, 0, 0, tRatio, 0, 0]
                     };
                     page.render(renderContext);
                 });
